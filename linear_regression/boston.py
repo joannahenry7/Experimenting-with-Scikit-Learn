@@ -1,7 +1,9 @@
+import numpy as np
 import mglearn
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
 from sklearn.linear_model import Ridge
+from sklearn.linear_model import Lasso
 
 X, y = mglearn.datasets.load_extended_boston()
 X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=0)
@@ -27,5 +29,26 @@ def boston_ridge_regression():
     print "Training set score: {:.2f}".format(ridge01.score(X_train, y_train))
     print "Test set score: {:.2f}".format(ridge01.score(X_test, y_test))
 
+def boston_lasso_regression():
+    lasso = Lasso().fit(X_train, y_train)
+    print "Training set score: {:.2f}".format(lasso.score(X_train, y_train))
+    print "Test set score: {:.2f}".format(lasso.score(X_test, y_test))
+    print "Number of features used: {}".format(np.sum(lasso.coef_ != 0))
+
+    # increase the default setting of 'max_iter'
+    # otherwise the model would give warning
+    lasso001 = Lasso(alpha=0.01, max_iter=100000).fit(X_train, y_train)
+    print "Training set score: {:.2f}".format(lasso001.score(X_train, y_train))
+    print "Test set score: {:.2f}".format(lasso001.score(X_test, y_test))
+    print "Number of features used: {}".format(np.sum(lasso001.coef_ != 0))
+
+    # if we set alpha too low, we remove the effect of regularization
+    # and end up overrfitting
+    lasso00001 = Lasso(alpha=0.0001, max_iter=100000).fit(X_train, y_train)
+    print "Training set score: {:.2f}".format(lasso00001.score(X_train, y_train))
+    print "Test set score: {:.2f}".format(lasso00001.score(X_test, y_test))
+    print "Number of features used: {}".format(np.sum(lasso00001.coef_ != 0))
+
 boston_linear_regression()
 boston_ridge_regression()
+boston_lasso_regression()
